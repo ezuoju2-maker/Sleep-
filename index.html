@@ -1,12 +1,410 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sleep</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sleep</title>
+<style>
+  * { 
+    margin: 0; padding: 0; box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+  }
+  
+  /* 强制锁定高度，彻底禁止滑动 */
+  html, body {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh; /* 适配手机动态地址栏 */
+    overflow: hidden; 
+  }
+
+  body {
+    background-color: #fcfdff;
+    position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* 背景光斑 */
+  .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none; }
+  .b-top-left { width: 80vw; height: 80vw; top: -10vw; left: -20vw; background: #d4e6fa; opacity: 0.7; }
+  .b-top-right { width: 75vw; height: 75vw; top: -10vw; right: -20vw; background: #e8defa; opacity: 0.6; }
+  .b-bottom { width: 140vw; height: 80vw; bottom: 0; left: 50%; transform: translateX(-50%); background: #b8def7; opacity: 0.85; filter: blur(90px); }
+  .b-light { width: 90vw; height: 60vw; bottom: 20vh; left: 5vw; background: #ffffff; opacity: 0.8; filter: blur(70px); }
+
+  /* 顶部导航区 - 极度紧凑 */
+  .header {
+    width: 100%; max-width: 390px;
+    padding: 8px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+  
+  .brand { display: flex; align-items: center; gap: 6px; color: #111; }
+  .logo-img {
+    width: 44px; height: 32px;
+    background-image: url('logo.png');
+    background-size: contain; background-position: center; background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  
+  .brand-name {
+    font-family: "Courier New", Courier, monospace; 
+    font-weight: 900; font-size: 22px; letter-spacing: -1px;
+  }
+
+  /* 语言切换 */
+  .lang-container { position: relative; }
+  .lang-btn {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 4px 10px; border-radius: 20px; font-size: 12px; color: #333; cursor: pointer;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .lang-menu {
+    position: absolute; top: calc(100% + 8px); right: 0; width: 180px; max-height: 200px; overflow-y: auto;
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.25s;
+    z-index: 20; overscroll-behavior: contain;
+  }
+  .lang-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+  .lang-menu::-webkit-scrollbar { width: 0; }
+  .lang-item { padding: 8px 12px; font-size: 13px; color: #333; cursor: pointer; display: flex; gap: 6px; }
+
+  /* ===== 卡片主体 - 压缩内边距 ===== */
+  .login-card {
+    position: relative; z-index: 5;
+    width: min(92vw, 390px);
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 16px; /* 大幅压缩：24px -> 16px */
+    box-shadow: 0 10px 30px -15px rgba(100, 130, 160, 0.15);
+    flex-shrink: 0;
+  }
+
+  .card-header { text-align: center; margin-bottom: 12px; }
+  .card-header h1 { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 2px; }
+  .card-header p { font-size: 12px; color: #888; }
+
+  .tabs { display: flex; background: #f4f5f7; border-radius: 10px; padding: 2px; margin-bottom: 12px; }
+  .tab {
+    flex: 1; text-align: center; padding: 6px 0; font-size: 13px; font-weight: 600;
+    color: #888; border-radius: 8px; cursor: pointer; transition: all 0.3s;
+  }
+  .tab.active { background: #fff; color: #111; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+
+  .form-content { display: none; animation: fadeIn 0.2s ease; }
+  .form-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 输入框组 - 高度和间距压缩 */
+  .input-container { margin-bottom: 8px; }
+  .input-group { position: relative; }
+  .input-group input {
+    width: 100%; height: 40px; /* 46px -> 40px */
+    border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 0 40px 0 12px;
+    font-size: 14px; color: #111;
+    outline: none; background: #fafbfc; transition: border-color 0.2s;
+    -webkit-user-select: text; user-select: text;
+  }
+  .input-group input:focus { border-color: #7fb6dd; background: #fff; }
+  .input-group input::placeholder { color: #b0b5bb; }
+  
+  .input-tips {
+    font-size: 10px; color: #a0aab5; margin-top: 2px; padding-left: 4px; line-height: 1.2;
+  }
+
+  .eye-wrapper {
+    position: absolute; right: 0; top: 0; height: 100%; width: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 5;
+  }
+
+  .eye-icon {
+    width: 16px; height: 16px; 
+    stroke: #a0aab5; fill: none; stroke-width: 1.8; pointer-events: none; transition: stroke 0.2s;
+  }
+  .eye-icon .eye-slash { display: none; }
+  .eye-wrapper.show-pwd .eye-slash { display: block; }
+  .eye-wrapper.show-pwd .eye-icon { stroke: #111; }
+
+  .checkbox-group { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #666; margin-bottom: 12px; margin-top: 2px;}
+  .checkbox-group input[type="checkbox"] { width: 14px; height: 14px; accent-color: #111; cursor: pointer; }
+  .checkbox-group a { color: #4d8ee4; text-decoration: none; }
+
+  .btn-submit {
+    width: 100%; height: 40px; /* 46px -> 40px */
+    background: #000; color: #fff; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px;
+    transition: transform 0.1s;
+  }
+  .btn-submit:active { transform: scale(0.98); }
+
+  .form-actions { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; margin-bottom: 12px; }
+  .form-actions .checkbox-group { margin-bottom: 0; }
+  .form-actions a { color: #4d8ee4; text-decoration: none; }
+
+  .divider { display: flex; align-items: center; color: #b0b5bb; font-size: 11px; margin-bottom: 12px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
+  .divider::before { margin-right: 8px; } .divider::after { margin-left: 8px; }
+
+  .social-login { display: flex; gap: 8px; margin-bottom: 12px; }
+  .social-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    height: 40px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    font-size: 13px; font-weight: 600; color: #111; cursor: pointer;
+  }
+  .social-btn svg { width: 16px; height: 16px; }
+
+  .footer-text { text-align: center; font-size: 10px; color: #999; line-height: 1.3; }
+  .footer-text a { color: #999; text-decoration: none; margin: 0 2px; }
+</style>
 </head>
 <body>
-  <h1>Sleep 项目已上线</h1>
-  <p>这是我们的第一个页面。</p>
+  <div class="blob b-top-left"></div>
+  <div class="blob b-top-right"></div>
+  <div class="blob b-bottom"></div>
+  <div class="blob b-light"></div>
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo-img"></div>
+      <span class="brand-name">𝚂𝚕𝚎𝚎𝚙.</span>
+    </div>
+    <div class="lang-container">
+      <div class="lang-btn" id="langBtn">
+        <span id="currentFlag">🇨🇳</span>
+        <span id="currentText">简体中文</span>
+      </div>
+      <div class="lang-menu" id="langMenu"></div>
+    </div>
+  </header>
+
+  <!-- 增加 margin-top: auto 和 margin-bottom: auto 让它居中利用剩余空间 -->
+  <div class="login-card" style="margin: auto 0;">
+    <div class="card-header">
+      <h1 id="pageTitle">欢迎回来</h1>
+      <p id="pageSub">登录以继续访问 Sleep 平台</p>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" id="tabLogin">登录</div>
+      <div class="tab" id="tabRegister">注册</div>
+    </div>
+
+    <!-- 登录表单 -->
+    <div class="form-content active" id="loginForm">
+      <form>
+        <div class="input-container">
+          <div class="input-group">
+            <input type="text" placeholder="请输入账号或邮箱">
+          </div>
+        </div>
+        
+        <div class="input-container">
+          <div class="input-group">
+            <input type="password" class="pwd-input" placeholder="请输入密码">
+            <div class="eye-wrapper">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle class="eye-open" cx="12" cy="12" r="3"/>
+                <line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="agreeLogin">
+          <label for="agreeLogin">我已阅读并同意 <a href="#">《服务条款》</a> 和 <a href="#">《隐私政策》</a></label>
+        </div>
+
+        <button type="button" class="btn-submit">登 录</button>
+
+        <div class="form-actions">
+          <div class="checkbox-group">
+            <input type="checkbox" id="remember">
+            <label for="remember">记住我</label>
+          </div>
+          <a href="#">忘记密码?</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- 注册表单 -->
+    <div class="form-content" id="registerForm">
+      <form>
+        <div class="input-container">
+          <div class="input-group">
+            <input type="text" placeholder="请设置账号 (用户名)">
+          </div>
+          <div class="input-tips">支持 4-20 位字母、数字或下划线</div>
+        </div>
+        
+        <div class="input-container">
+          <div class="input-group">
+            <input type="email" placeholder="请输入邮箱地址">
+          </div>
+          <div class="input-tips">用于登录、找回密码及接收重要通知</div>
+        </div>
+
+        <div class="input-container">
+          <div class="input-group">
+            <input type="password" class="pwd-input" placeholder="设置密码">
+            <div class="eye-wrapper">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle class="eye-open" cx="12" cy="12" r="3"/>
+                <line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/>
+              </svg>
+            </div>
+          </div>
+          <div class="input-tips">需包含大小写字母、数字及符号，长度 8-20 位</div>
+        </div>
+
+        <div class="input-container">
+          <div class="input-group">
+            <input type="password" class="pwd-input" placeholder="再次确认密码">
+            <div class="eye-wrapper">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle class="eye-open" cx="12" cy="12" r="3"/>
+                <line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/>
+              </svg>
+            </div>
+          </div>
+          <div class="input-tips">请与上方设置的密码保持一致</div>
+        </div>
+
+        <div class="checkbox-group" style="margin-top: 4px;">
+          <input type="checkbox" id="agreeRegister">
+          <label for="agreeRegister">我已阅读并同意 <a href="#">《服务条款》</a> 和 <a href="#">《隐私政策》</a></label>
+        </div>
+
+        <button type="button" class="btn-submit" style="margin-bottom: 8px;">注 册</button>
+      </form>
+    </div>
+
+    <div class="divider">或使用以下方式</div>
+
+    <div class="social-login">
+      <button type="button" class="social-btn">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        GitHub
+      </button>
+      <button type="button" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="12" r="3" />
+          <path d="M12 12h8" />
+          <path d="M18 12v3" />
+          <path d="M16 15h2" />
+        </svg>
+        Passkey
+      </button>
+    </div>
+
+    <div class="footer-text">
+      <div>© 2025 Sleep. All rights reserved. · <a href="#">隐私政策</a> · <a href="#">用户协议</a></div>
+    </div>
+  </div>
+
+  <script>
+    const languages = [
+      { code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en', flag: '🇺🇸', name: 'English' },
+      { code: 'es', flag: '🇪🇸', name: 'Español' }, { code: 'hi', flag: '🇮🇳', name: 'हिन्दी' },
+      { code: 'fr', flag: '🇫🇷', name: 'Français' }, { code: 'ar', flag: '🇸🇦', name: 'العربية' },
+      { code: 'bn', flag: '🇧🇩', name: 'বাংলা' }, { code: 'pt', flag: '🇵🇹', name: 'Português' },
+      { code: 'ru', flag: '🇷🇺', name: 'Русский' }, { code: 'ur', flag: '🇵🇰', name: 'اردو' },
+      { code: 'id', flag: '🇮🇩', name: 'Bahasa Indonesia' }, { code: 'de', flag: '🇩🇪', name: 'Deutsch' },
+      { code: 'ja', flag: '🇯🇵', name: '日本語' }, { code: 'nl', flag: '🇳🇱', name: 'Nederlands' },
+      { code: 'tr', flag: '🇹🇷', name: 'Türkçe' }, { code: 'ko', flag: '🇰🇷', name: '한국어' },
+      { code: 'it', flag: '🇮🇹', name: 'Italiano' }, { code: 'th', flag: '🇹🇭', name: 'ไทย' },
+      { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' }, { code: 'zh-TW', flag: '🇭🇰', name: '繁體中文' },
+      { code: 'pl', flag: '🇵🇱', name: 'Polski' }, { code: 'uk', flag: '🇺🇦', name: 'Українська' },
+      { code: 'fa', flag: '🇮🇷', name: 'فارسی' }, { code: 'ta', flag: '🇱🇰', name: 'தமிழ்' },
+      { code: 'te', flag: '🇮🇳', name: 'తెలుగు' }, { code: 'mr', flag: '🇮🇳', name: 'मराठी' },
+      { code: 'kn', flag: '🇮🇳', name: 'ಕನ್ನಡ' }, { code: 'gu', flag: '🇮🇳', name: 'ગુજરાતી' },
+      { code: 'ms', flag: '🇲🇾', name: 'Bahasa Melayu' }, { code: 'tl', flag: '🇵🇭', name: 'Filipino' }
+    ];
+
+    const langBtn = document.getElementById('langBtn');
+    const langMenu = document.getElementById('langMenu');
+    const currentFlag = document.getElementById('currentFlag');
+    const currentText = document.getElementById('currentText');
+
+    languages.forEach(lang => {
+      const div = document.createElement('div');
+      div.className = 'lang-item';
+      div.innerHTML = `<span class="flag">${lang.flag}</span><span class="name">${lang.name}</span>`;
+      div.onclick = (e) => {
+        e.stopPropagation();
+        currentFlag.textContent = lang.flag;
+        currentText.textContent = lang.name;
+        langMenu.classList.remove('active');
+      };
+      langMenu.appendChild(div);
+    });
+
+    langBtn.onclick = (e) => { e.stopPropagation(); langMenu.classList.toggle('active'); };
+    document.addEventListener('click', () => { langMenu.classList.remove('active'); });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 密码显隐逻辑
+    const eyeWrappers = document.querySelectorAll('.eye-wrapper');
+    eyeWrappers.forEach(wrapper => {
+      const input = wrapper.previousElementSibling;
+      wrapper.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (input.type === 'password') {
+          input.type = 'text';
+          wrapper.classList.add('show-pwd');
+        } else {
+          input.type = 'password';
+          wrapper.classList.remove('show-pwd');
+        }
+        input.focus();
+        const val = input.value;
+        input.value = '';
+        input.value = val;
+      });
+    });
+
+    // Tab 切换逻辑
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSub = document.getElementById('pageSub');
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.add('active');
+      registerForm.classList.remove('active');
+      pageTitle.textContent = "欢迎回来";
+      pageSub.textContent = "登录以继续访问 Sleep 平台";
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerForm.classList.add('active');
+      loginForm.classList.remove('active');
+      pageTitle.textContent = "创建账号";
+      pageSub.textContent = "加入 Sleep 平台，开启你的专属空间";
+    });
+  </script>
 </body>
 </html>
