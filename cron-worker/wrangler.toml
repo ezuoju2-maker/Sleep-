@@ -1,0 +1,15 @@
+name = "sleep-cron-worker"
+main = "index.js"
+compatibility_date = "2026-10-01"
+
+[[kv_namespaces]]
+binding = "SLEEP_KV"
+id = "9e9fa794127b4b69a03bc56ce77be5f2"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sleep-db"
+database_id = "0ea2ea5d-3baa-458b-9ace-f02e332f92c3"
+
+[triggers]
+crons = ["0 0 * * *"]

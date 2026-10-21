@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS passkeys (
+  credential_id TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  public_key TEXT NOT NULL,
+  counter INTEGER DEFAULT 0,
+  transports TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: JS syntax
+        run: |
+          FAIL=0
+          for f in $(find functions cron-worker test -name '*.js' -type f); do
+            node --check "$f" || { echo "FAIL $f"; FAIL=1; }
+          done
+          exit $FAIL
+      - name: Unit tests
+        run: npm test

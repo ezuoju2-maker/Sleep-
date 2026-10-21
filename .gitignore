@@ -1,2 +1,11 @@
-.wrangler/
 node_modules/
+.wrangler/
+.env
+.env.*
+.dev.vars
+*.log
+.DS_Store
+*.bak*
+*.original
+KNOWN_ISSUES.txt
+dist/

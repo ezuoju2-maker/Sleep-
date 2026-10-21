@@ -1,0 +1,195 @@
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  html, body {
+    width: 100%; height: 100vh; height: 100dvh;
+    overflow: hidden; touch-action: pan-y;
+    -webkit-text-size-adjust: 100% !important;
+  }
+
+  body {
+    background-color: #fcfdff; position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none; }
+  .b-top-left { width: 80vw; height: 80vw; top: -10vw; left: -20vw; background: #d4e6fa; opacity: 0.7; }
+  .b-top-right { width: 75vw; height: 75vw; top: -10vw; right: -20vw; background: #e8defa; opacity: 0.6; }
+  .b-bottom { width: 140vw; height: 80vw; bottom: 0; left: 50%; transform: translateX(-50%); background: #b8def7; opacity: 0.85; filter: blur(90px); }
+  .b-light { width: 90vw; height: 60vw; bottom: 20vh; left: 5vw; background: #ffffff; opacity: 0.8; filter: blur(70px); }
+
+  .header { width: 100%; max-width: 390px; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; flex-shrink: 0; }
+  .brand { display: flex; align-items: center; gap: 6px; color: #111; }
+  .logo-img { width: 44px; height: 32px; background-image: url('logo.png'); background-size: contain; background-position: center; background-repeat: no-repeat; pointer-events: none; }
+  .brand-name { font-family: "Courier New", Courier, monospace; font-weight: 900; font-size: 22px; letter-spacing: -1px; }
+
+  .lang-container { position: relative; }
+  .lang-btn { display: flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.8); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: #333; cursor: pointer; backdrop-filter: blur(10px); }
+  .lang-menu { position: absolute; top: calc(100% + 8px); right: 0; width: 180px; max-height: 200px; overflow-y: auto; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.25s; z-index: 20; }
+  .lang-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+  .lang-menu::-webkit-scrollbar { width: 0; }
+  .lang-item { padding: 8px 12px; font-size: 13px; color: #333; cursor: pointer; display: flex; gap: 6px; }
+
+  .scroll-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 0; }
+  .scroll-wrapper::-webkit-scrollbar { display: none; }
+
+  .login-card { position: relative; z-index: 5; width: min(92vw, 390px); background: #ffffff; border-radius: 20px; padding: 16px; box-shadow: 0 10px 30px -15px rgba(100, 130, 160, 0.15); flex-shrink: 0; transition: transform 0.1s; }
+
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+  .shake { animation: shake 0.4s ease-in-out; }
+
+  .card-header { text-align: center; margin-bottom: 12px; }
+  .card-header h1 { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 2px; }
+  .card-header p { font-size: 12px; color: #888; }
+
+  .tabs { display: flex; background: #f4f5f7; border-radius: 10px; padding: 2px; margin-bottom: 12px; }
+  .tab { flex: 1; text-align: center; padding: 6px 0; font-size: 13px; font-weight: 600; color: #888; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+  .tab.active { background: #fff; color: #111; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+
+  .form-content { display: none; animation: fadeIn 0.2s ease; }
+  .form-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .input-container { margin-bottom: 8px; position: relative; }
+  .input-group { position: relative; }
+  .input-group input { width: 100%; height: 40px; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0 40px 0 12px; font-size: 14px; color: #111; outline: none; background: #fafbfc; transition: all 0.2s; -webkit-user-select: text; user-select: text; }
+  .input-group input:focus { border-color: #7fb6dd; background: #fff; }
+  .input-group input::placeholder { color: #6b7280; opacity: 1; }
+  .input-group input.error { border-color: #e53e3e; background: #fffafb; }
+
+  .input-tips { font-size: 11px; color: #5f6770; margin-top: 2px; padding-left: 4px; line-height: 1.2; transition: color 0.2s; }
+  .input-tips.error-text { color: #e53e3e; }
+
+  .eye-wrapper { position: absolute; right: 0; top: 0; height: 100%; width: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; background: none; border: none; padding: 0; }
+  .eye-icon { width: 16px; height: 16px; stroke: #a0aab5; fill: none; stroke-width: 1.8; pointer-events: none; transition: stroke 0.2s; }
+  .eye-icon .eye-slash { display: none; }
+  .eye-wrapper.show-pwd .eye-slash { display: block; }
+  .eye-wrapper.show-pwd .eye-icon { stroke: #111; }
+
+  .checkbox-group { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #666; margin-bottom: 12px; margin-top: 2px;}
+  .checkbox-group input[type="checkbox"] { width: 14px; height: 14px; accent-color: #111; cursor: pointer; }
+  .checkbox-group a { color: #4d8ee4; text-decoration: none; }
+  .checkbox-group.error-checkbox label { color: #e53e3e; }
+  .checkbox-group.error-checkbox input[type=checkbox] { accent-color: #e53e3e; outline: 1px solid #e53e3e; border-radius: 2px; }
+
+  .btn-submit { width: 100%; height: 40px; background: #000; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, background 0.2s; }
+  .btn-submit:active { transform: scale(0.98); background: #222; }
+
+  .form-actions { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; margin-bottom: 12px; }
+  .form-actions .checkbox-group { margin-bottom: 0; }
+  .form-actions a { color: #4d8ee4; text-decoration: none; }
+
+  .divider { display: flex; align-items: center; color: #6b7280; font-size: 11px; margin-bottom: 12px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
+  .divider::before { margin-right: 8px; } .divider::after { margin-left: 8px; }
+
+  .social-login { display: flex; gap: 8px; margin-bottom: 12px; }
+  .social-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 13px; font-weight: 600; color: #111; cursor: pointer; }
+  .social-btn svg { width: 16px; height: 16px; }
+
+  .footer-text { text-align: center; font-size: 10px; color: #999; line-height: 1.3; }
+  .footer-text a { color: #999; text-decoration: none; margin: 0 2px; }
+
+    
+/* 按钮加载动画 */
+.btn-submit.loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn-submit.loading::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 18px; height: 18px;
+  margin-left: -9px; margin-top: -9px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================= 修复：输入框与按钮的焦点样式 ================= */
+/* 输入框聚焦时，去掉系统粗边框，用我们自己设计的浅蓝边框+极软光晕 */
+input:focus, input:focus-visible {
+  outline: none !important;
+  border-color: #7fb6dd !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(127, 182, 221, 0.15) !important;
+}
+
+/* 按钮和链接保留无障碍焦点环，但换得更细、更柔和 */
+button:focus-visible, a:focus-visible {
+  outline: 2px solid #7fb6dd;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ===== 弹窗组件类（F-50 内联样式清理）===== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.modal-z-100 { z-index: 100; background: rgba(255, 255, 255, 0.7); }
+.modal-backdrop.modal-z-200 { z-index: 200; }
+.modal-backdrop.modal-z-300 { z-index: 300; }
+.modal-backdrop.modal-bg-soft { background: rgba(255, 255, 255, 0.85); }
+
+.modal-card {
+  background: #fff;
+  width: 85%;
+  max-width: 340px;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+}
+.modal-card-lg {
+  width: 90%;
+  max-width: 360px;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-card-md {
+  width: 90%;
+  max-width: 350px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title { font-size: 18px; color: #111; }
+.modal-title-sm { font-size: 18px; margin-bottom: 8px; color: #111; }
+.modal-tip { font-size: 11px; color: #e53e3e; margin-bottom: 12px; }
+.modal-tip[hidden] { display: none; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-btn-cancel {
+  flex: 1; height: 40px;
+  background: #f4f5f7; border: none; border-radius: 10px;
+  font-weight: 600; color: #666; cursor: pointer;
+}
+.modal-btn-primary {
+  flex: 1; height: 40px;
+  background: #000; border: none; border-radius: 10px;
+  font-weight: 600; color: #fff; cursor: pointer;
+}
+.modal-input-pad { padding: 0 14px; }
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.modal-close-btn {
+  background: none; border: none; font-size: 20px; cursor: pointer; color: #999;
+}
