@@ -9,6 +9,7 @@ import { writeAudit } from "./_audit.js";
 import {
   REGISTER_IP_HOUR_LIMIT,
   REGISTER_IP_DAY_LIMIT,
+  SESSION_MAX_AGE_REMEMBER_SEC,
 } from "./_constants.js";
 
 export async function onRequestPost(context) {
@@ -25,9 +26,9 @@ export async function onRequestPost(context) {
     const hourKey = now.toISOString().slice(0, 13);
     const dayKey = now.toISOString().slice(0, 10);
     const h = await rateLimit(env, `register_ip:${clientIP}:h${hourKey}`, REGISTER_IP_HOUR_LIMIT, 3600);
-    if (!h.ok && !h.degraded) return Response.json({ error: "注册请求过于频繁，请一小时后再试" }, { status: 429 });
+    if (!h.ok) return Response.json({ error: "注册请求过于频繁，请一小时后再试" }, { status: 429 });
     const d = await rateLimit(env, `register_ip:${clientIP}:d${dayKey}`, REGISTER_IP_DAY_LIMIT, 86400);
-    if (!d.ok && !d.degraded) return Response.json({ error: "今日注册次数已达上限，请明天再试" }, { status: 429 });
+    if (!d.ok) return Response.json({ error: "今日注册次数已达上限，请明天再试" }, { status: 429 });
 
     const data = await request.json();
     const username = String(data.username || "").trim();
@@ -95,7 +96,7 @@ export async function onRequestPost(context) {
     const sessionTokenHash = await crypto.subtle
       .digest("SHA-256", new TextEncoder().encode(sessionToken))
       .then(b => Array.from(new Uint8Array(b), x => x.toString(16).padStart(2, "0")).join(""));
-    const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    const sessionExpiresAt = new Date(Date.now() + SESSION_MAX_AGE_REMEMBER_SEC * 1000).toISOString();
     const secure = request.url.startsWith("https://") ? "; Secure" : "";
     const cookieName = secure ? "__Host-session" : "session";
 
@@ -106,7 +107,7 @@ export async function onRequestPost(context) {
 
     context.waitUntil(writeAudit(env, request, { userId, action: "register.success" }));
 
-    const cookie = `${cookieName}=${sessionToken}; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=2592000`;
+    const cookie = `${cookieName}=${sessionToken}; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=${SESSION_MAX_AGE_REMEMBER_SEC}`;
     return new Response(JSON.stringify({
       success: true,
       user: { uid, username, email }

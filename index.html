@@ -48,11 +48,11 @@
         <h2 class="user-welcome" data-i18n="userWelcome">欢迎回来！</h2>
         <p class="user-info"><span data-i18n="uid">专属 ID:</span> <span id="userUid" class="user-uid"></span></p>
         
-        <button type="button" class="btn-submit" id="btnAuditLog" class="btn-ghost" data-i18n="btnAudit">查看账号安全日志</button>
-        <button type="button" class="btn-submit" id="btnSessions" class="btn-ghost" data-i18n="btnSessions">管理登录设备</button>
-        <button type="button" class="btn-submit" id="btnChangePwd" class="btn-ghost" data-i18n="btnChangePwd">修改登录密码</button>
-        <button type="button" class="btn-submit" id="btnAddPasskey" class="btn-dark" data-i18n="btnAddPasskey">开启面容 / 指纹登录</button>
-        <button type="button" class="btn-submit" id="btnLogout" class="btn-logout" data-i18n="btnLogout">退出登录</button>
+        <button type="button" class="btn-submit btn-ghost" id="btnAuditLog" data-i18n="btnAudit">查看账号安全日志</button>
+        <button type="button" class="btn-submit btn-ghost" id="btnSessions" data-i18n="btnSessions">管理登录设备</button>
+        <button type="button" class="btn-submit btn-ghost" id="btnChangePwd" data-i18n="btnChangePwd">修改登录密码</button>
+        <button type="button" class="btn-submit btn-dark" id="btnAddPasskey" data-i18n="btnAddPasskey">开启面容 / 指纹登录</button>
+        <button type="button" class="btn-submit btn-logout" id="btnLogout" data-i18n="btnLogout">退出登录</button>
       </div>
 
       <div class="form-content active" id="loginForm">
@@ -152,7 +152,7 @@
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalForgotTitle" id="modalForgotTitle">找回密码</h2>
       <p class="modal-desc" data-i18n="modalForgotDesc">输入注册时的邮箱，我们将发送重置链接。</p>
-      <div class="input-group" class="input-group-gap"><input type="email" id="forgotEmail" placeholder="请输入邮箱地址" class="modal-input-pad"></div>
+      <div class="input-group input-group-gap"><input type="email" id="forgotEmail" placeholder="请输入邮箱地址" class="modal-input-pad"></div>
       <div id="forgotTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelForgot" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>
@@ -164,7 +164,7 @@
   <div id="resetPwdModal" role="dialog" aria-modal="true" aria-labelledby="modalResetTitle" class="modal-backdrop modal-z-200">
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalResetTitle" id="modalResetTitle">设置新密码</h2>
-      <div class="input-group" class="input-group-gap"><input type="password" id="newPwd" placeholder="输入新密码 (12-128位)" autocomplete="new-password" class="modal-input-pad"></div>
+      <div class="input-group input-group-gap"><input type="password" id="newPwd" placeholder="输入新密码 (12-128位)" autocomplete="new-password" class="modal-input-pad"></div>
       <div id="resetTip" class="modal-tip" hidden></div>
       <button type="button" id="btnResetPwd" class="btn-primary-block" data-i18n="btnConfirmChange">确认修改</button>
     </div>
@@ -174,7 +174,7 @@
     <div class="modal-card">
       <h2 class="modal-title" data-i18n="modalChangePwdTitle" id="modalChangePwdTitle">修改密码</h2>
       <div class="input-group input-group-sm"><input type="password" id="oldPwd" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" autocomplete="current-password" class="modal-input-pad"></div>
-      <div class="input-group" class="input-group-gap"><input type="password" id="newPwdChange" placeholder="输入新密码 (12-128位)" data-i18n-placeholder="phNewPwd" autocomplete="new-password" class="modal-input-pad"></div>
+      <div class="input-group input-group-gap"><input type="password" id="newPwdChange" placeholder="输入新密码 (12-128位)" data-i18n-placeholder="phNewPwd" autocomplete="new-password" class="modal-input-pad"></div>
       <div id="changePwdTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelChange" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>
@@ -208,7 +208,7 @@
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalSudoTitle" id="modalSudoTitle">安全验证</h2>
       <p class="modal-desc" data-i18n="modalSudoDesc">为了您的账号安全，请再次输入登录密码。</p>
-      <div class="input-group" class="input-group-gap"><input type="password" id="sudoPassword" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" class="modal-input-pad"></div>
+      <div class="input-group input-group-gap"><input type="password" id="sudoPassword" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" class="modal-input-pad"></div>
       <div id="sudoTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelSudo" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>

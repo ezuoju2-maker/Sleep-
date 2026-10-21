@@ -8,7 +8,7 @@ export async function onRequestPost(context) {
 
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
   const rl = await rateLimit(env, `passkey_options_ip:${ip}`, 20, 900);
-  if (!rl.ok && !rl.degraded) {
+  if (!rl.ok) {
     return Response.json({ error: "尝试过于频繁，请稍后再试" }, { status: 429 });
   }
 

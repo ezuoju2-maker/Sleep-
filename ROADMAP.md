@@ -14,8 +14,7 @@
 
 - 线上 users 表与 migrations/0001 存在 schema 漂移（缺 session_version，0001 之后补过 email_verified），后续以 0001 为准重建或逐列补齐
 
-- sessions.js 移除 token_hash 下发
-- device_fingerprints 死表清理
+- sessions.js 移除 token_hash 下发（经核实已核销）
 - timingSafeEqual 统一到 _crypto.js
 
 ## 部署后 1 周

@@ -1,6 +1,7 @@
 import { hashPassword } from "./_crypto.js";
 import { generateToken, hashToken } from "./_token.js";
 import { fetchWithTimeout } from "./_http.js";
+import { SESSION_MAX_AGE_REMEMBER_SEC } from "./_constants.js";
 
 async function exchangeCode(env, code, redirectUri) {
   const res = await fetchWithTimeout("https://github.com/login/oauth/access_token", {
@@ -125,7 +126,7 @@ export async function onRequestGet(context) {
   // 4) 签发会话
   const sessionToken = generateToken();
   const tokenHash = await hashToken(sessionToken);
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_REMEMBER_SEC * 1000).toISOString();
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
   const ua = request.headers.get("user-agent") || "unknown";
 
@@ -136,14 +137,10 @@ export async function onRequestGet(context) {
       .bind(user.id, ip, (request.cf && request.cf.country) || "Unknown", ua),
   ]);
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "/",
-      "Set-Cookie": [
-        `__Host-session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000`,
-        "oauth_nonce=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0",
-      ],
-    },
-  });
+  const headers = new Headers();
+  headers.set("Location", "/");
+  headers.append("Set-Cookie", `__Host-session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${SESSION_MAX_AGE_REMEMBER_SEC}`);
+  headers.append("Set-Cookie", "oauth_nonce=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0");
+
+  return new Response(null, { status: 302, headers });
 }

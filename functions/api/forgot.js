@@ -25,7 +25,7 @@ export async function onRequestPost(context) {
       return Response.json({ error: "邮件服务暂不可用，请稍后再试" }, { status: 503 });
     }
     const data = await request.json();
-    const email = data.email;
+    const email = String(data.email || "").trim().toLowerCase();
     if (!email) return safe();
 
     if (!evaluateShield(data.shield).pass) {
@@ -35,10 +35,10 @@ export async function onRequestPost(context) {
     const today = new Date().toISOString().slice(0, 10);
 
     const ipRl = await rateLimit(env, `forgot_ip:${clientIP}:${today}`, FORGOT_IP_DAY_LIMIT, 86400);
-    if (!ipRl.ok && !ipRl.degraded) return safe();
+    if (!ipRl.ok) return safe();
 
     const globalRl = await rateLimit(env, `forgot_global:${today}`, FORGOT_GLOBAL_DAY_LIMIT, 86400);
-    if (!globalRl.ok && !globalRl.degraded) return safe();
+    if (!globalRl.ok) return safe();
 
     const cooldown = await env.SLEEP_KV.get(`forgot_cooldown:${email}`);
     if (cooldown) return safe();

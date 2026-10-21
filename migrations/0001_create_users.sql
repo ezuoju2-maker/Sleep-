@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS users (
   uid TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  email_verified INTEGER DEFAULT 0,
   session_version INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
