@@ -115,7 +115,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ================= 修复：输入框与按钮的焦点样式 ================= */
+/* 焦点样式 */
 /* 输入框聚焦时，去掉系统粗边框，用我们自己设计的浅蓝边框+极软光晕 */
 input:focus, input:focus-visible {
   outline: none !important;
@@ -131,7 +131,7 @@ button:focus-visible, a:focus-visible {
   border-radius: 4px;
 }
 
-/* ===== 弹窗组件类（F-50 内联样式清理）===== */
+/* 弹窗组件类 */
 .modal-backdrop {
   display: none;
   position: fixed;
@@ -199,3 +199,32 @@ input, textarea, select {
   font-size: 16px !important;
   touch-action: manipulation;
 }
+
+/* P2-2 内联样式提取 */
+.user-panel { text-align: center; padding: 20px 0; }
+.user-avatar { width: 60px; height: 60px; background: #e8defa; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.user-welcome { font-size: 20px; color: #111; margin-bottom: 8px; }
+.user-info { font-size: 13px; color: #888; margin-bottom: 24px; }
+.user-uid { font-weight: bold; color: #111; }
+.btn-ghost { background: #f4f5f7; color: #111; margin-bottom: 10px; width: 100%; height: 40px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-dark { background: #000; color: #fff; margin-bottom: 10px; width: 100%; height: 40px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-logout { background: #eee; color: #111; margin-bottom: 0; width: 100%; height: 40px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-danger { width: 100%; height: 40px; background: #e53e3e; border: none; border-radius: 10px; font-weight: 600; color: #fff; cursor: pointer; }
+.input-group-gap { margin-bottom: 16px; }
+.list-item { padding: 8px; border-bottom: 1px solid #eee; }
+.modal-list { overflow-y: auto; font-size: 13px; color: #666; line-height: 1.6; padding-right: 8px; }
+.honeypot { display: none !important; }
+
+.user-panel { display: none; }
+.user-panel.active { display: block; }
+.form-actions-gap { margin-top: 14px; }
+.checkbox-group-gap { margin-top: 4px; }
+.btn-submit-sm { margin-bottom: 8px; }
+.footer-gap { line-height: 1.6; margin-top: 10px; }
+.footer-sub { margin-bottom: 6px; }
+.modal-desc { font-size: 12px; color: #888; margin-bottom: 16px; }
+.btn-primary-block { width: 100%; height: 40px; background: #000; border: none; border-radius: 10px; font-weight: 600; color: #fff; cursor: pointer; }
+.modal-title { font-size: 18px; margin-bottom: 16px; color: #111; }
+.input-group-sm { margin-bottom: 12px; }
+.modal-list-flex { overflow-y: auto; font-size: 13px; color: #666; flex: 1; margin-bottom: 16px; }
+.modal-content-text { font-size: 13px; color: #666; line-height: 1.6; overflow-y: auto; padding-right: 8px; }

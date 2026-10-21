@@ -22,7 +22,7 @@ const SECURITY_HEADERS = {
   "Cross-Origin-Resource-Policy": "same-origin",
 };
 
-const HTML_CSP = "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
+const HTML_CSP = "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
 
 export async function onRequest(context) {
   const url = new URL(context.request.url);

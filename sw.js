@@ -91,13 +91,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 静态资源：Cache-First
-  if (
-    request.destination === 'script' ||
-    request.destination === 'style' ||
-    request.destination === 'image' ||
-    request.destination === 'font'
-  ) {
+  // 脚本和样式：Network-First（防止发版后一直拿旧缓存）
+  if (request.destination === 'script' || request.destination === 'style') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // 图片和字体：Cache-First
+  if (request.destination === 'image' || request.destination === 'font') {
     event.respondWith(cacheFirst(request));
     return;
   }

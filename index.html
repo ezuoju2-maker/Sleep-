@@ -43,21 +43,21 @@
         <div class="tab" id="tabRegister" data-i18n="register">注册</div>
       </div>
 
-      <div id="userPanel" style="display: none; text-align: center; padding: 20px 0;">
-        <div style="width: 60px; height: 60px; background: #e8defa; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px;">👋</div>
-        <h2 style="font-size: 20px; color: #111; margin-bottom: 8px;" data-i18n="userWelcome">欢迎回来！</h2>
-        <p style="font-size: 13px; color: #888; margin-bottom: 24px;"><span data-i18n="uid">专属 ID:</span> <span id="userUid" style="font-weight: bold; color: #111;"></span></p>
+      <div id="userPanel" class="user-panel">
+        <div class="user-avatar">👋</div>
+        <h2 class="user-welcome" data-i18n="userWelcome">欢迎回来！</h2>
+        <p class="user-info"><span data-i18n="uid">专属 ID:</span> <span id="userUid" class="user-uid"></span></p>
         
-        <button type="button" class="btn-submit" id="btnAuditLog" style="background: #f4f5f7; color: #111; margin-bottom: 10px;" data-i18n="btnAudit">查看账号安全日志</button>
-        <button type="button" class="btn-submit" id="btnSessions" style="background: #f4f5f7; color: #111; margin-bottom: 10px;" data-i18n="btnSessions">管理登录设备</button>
-        <button type="button" class="btn-submit" id="btnChangePwd" style="background: #f4f5f7; color: #111; margin-bottom: 10px;" data-i18n="btnChangePwd">修改登录密码</button>
-        <button type="button" class="btn-submit" id="btnAddPasskey" style="background: #000; color: #fff; margin-bottom: 10px;" data-i18n="btnAddPasskey">开启面容 / 指纹登录</button>
-        <button type="button" class="btn-submit" id="btnLogout" style="background: #eee; color: #111; margin-bottom: 0;" data-i18n="btnLogout">退出登录</button>
+        <button type="button" class="btn-submit" id="btnAuditLog" class="btn-ghost" data-i18n="btnAudit">查看账号安全日志</button>
+        <button type="button" class="btn-submit" id="btnSessions" class="btn-ghost" data-i18n="btnSessions">管理登录设备</button>
+        <button type="button" class="btn-submit" id="btnChangePwd" class="btn-ghost" data-i18n="btnChangePwd">修改登录密码</button>
+        <button type="button" class="btn-submit" id="btnAddPasskey" class="btn-dark" data-i18n="btnAddPasskey">开启面容 / 指纹登录</button>
+        <button type="button" class="btn-submit" id="btnLogout" class="btn-logout" data-i18n="btnLogout">退出登录</button>
       </div>
 
       <div class="form-content active" id="loginForm">
         <form id="formLogin" novalidate>
-<input type="text" id="shield_hp" name="shield_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
+<input type="text" id="shield_hp" name="shield_hp" class="honeypot" tabindex="-1" autocomplete="off">
           <div class="input-container">
             <div class="input-group">
               <input type="text" id="loginUser" placeholder="请输入用户名或邮箱" data-i18n-placeholder="phLoginUser" autocomplete="username webauthn" aria-describedby="tipLoginUser">
@@ -77,7 +77,7 @@
           </div>
           <button type="submit" class="btn-submit" data-i18n="btnLogin">登 录</button>
           
-          <div class="form-actions" style="margin-top: 14px;">
+          <div class="form-actions form-actions-gap">
             <div class="checkbox-group">
               <input type="checkbox" id="remember">
               <label for="remember" data-i18n="remember">记住我</label>
@@ -89,7 +89,7 @@
 
       <div class="form-content" id="registerForm">
         <form id="formRegister" novalidate>
-<input type="text" id="shield_hp_reg" name="shield_hp_reg" style="display:none !important;" tabindex="-1" autocomplete="off">
+<input type="text" id="shield_hp_reg" name="shield_hp_reg" class="honeypot" tabindex="-1" autocomplete="off">
           <div class="input-container">
             <div class="input-group">
               <input type="text" id="regUser" placeholder="请设置用户名 (4-20位)" data-i18n-placeholder="phRegUser" autocomplete="username" aria-describedby="tipUser">
@@ -116,11 +116,11 @@
             </div>
             <div class="input-tips" id="tipPwdConfirm" role="alert" aria-live="polite" data-i18n="tipPwdConfirm">请与上方设置的密码保持一致</div>
           </div>
-          <div class="checkbox-group" style="margin-top: 4px;">
+          <div class="checkbox-group checkbox-group-gap">
             <input type="checkbox" id="agreeRegister">
             <label for="agreeRegister"><span data-i18n="agreePrefix">我已阅读并同意</span> <a href="/terms.html" data-i18n="terms">《服务条款》</a> <span data-i18n="and">和</span> <a href="/privacy.html" data-i18n="privacy">《隐私政策》</a></label>
           </div>
-          <button type="submit" class="btn-submit" style="margin-bottom: 8px;" data-i18n="btnRegister">注 册</button>
+          <button type="submit" class="btn-submit btn-submit-sm" data-i18n="btnRegister">注 册</button>
         </form>
       </div>
 
@@ -136,8 +136,8 @@
         </button>
       </div>
 
-      <div class="footer-text" style="line-height: 1.6; margin-top: 10px;">
-        <div style="margin-bottom: 6px;">© <span id="currentYear">2026</span> Sleep. All rights reserved.</div>
+      <div class="footer-text footer-gap">
+        <div class="footer-sub">© <span id="currentYear">2026</span> Sleep. All rights reserved.</div>
         <div>
           <a href="/privacy.html" data-i18n="footerPrivacy">隐私政策</a> · 
           <a href="/terms.html" data-i18n="footerTerms">用户协议</a> · 
@@ -151,8 +151,8 @@
   <div id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="modalForgotTitle" class="modal-backdrop modal-z-100">
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalForgotTitle" id="modalForgotTitle">找回密码</h2>
-      <p style="font-size: 12px; color: #888; margin-bottom: 16px;" data-i18n="modalForgotDesc">输入注册时的邮箱，我们将发送重置链接。</p>
-      <div class="input-group" style="margin-bottom: 16px;"><input type="email" id="forgotEmail" placeholder="请输入邮箱地址" class="modal-input-pad"></div>
+      <p class="modal-desc" data-i18n="modalForgotDesc">输入注册时的邮箱，我们将发送重置链接。</p>
+      <div class="input-group" class="input-group-gap"><input type="email" id="forgotEmail" placeholder="请输入邮箱地址" class="modal-input-pad"></div>
       <div id="forgotTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelForgot" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>
@@ -164,17 +164,17 @@
   <div id="resetPwdModal" role="dialog" aria-modal="true" aria-labelledby="modalResetTitle" class="modal-backdrop modal-z-200">
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalResetTitle" id="modalResetTitle">设置新密码</h2>
-      <div class="input-group" style="margin-bottom: 16px;"><input type="password" id="newPwd" placeholder="输入新密码 (12-128位)" autocomplete="new-password" class="modal-input-pad"></div>
+      <div class="input-group" class="input-group-gap"><input type="password" id="newPwd" placeholder="输入新密码 (12-128位)" autocomplete="new-password" class="modal-input-pad"></div>
       <div id="resetTip" class="modal-tip" hidden></div>
-      <button type="button" id="btnResetPwd" style="width: 100%; height: 40px; background: #000; border: none; border-radius: 10px; font-weight: 600; color: #fff; cursor: pointer;" data-i18n="btnConfirmChange">确认修改</button>
+      <button type="button" id="btnResetPwd" class="btn-primary-block" data-i18n="btnConfirmChange">确认修改</button>
     </div>
   </div>
 
   <div id="changePwdModal" role="dialog" aria-modal="true" aria-labelledby="modalChangePwdTitle" class="modal-backdrop modal-z-200">
     <div class="modal-card">
-      <h2 style="font-size: 18px; margin-bottom: 16px; color: #111;" data-i18n="modalChangePwdTitle" id="modalChangePwdTitle">修改密码</h2>
-      <div class="input-group" style="margin-bottom: 12px;"><input type="password" id="oldPwd" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" autocomplete="current-password" class="modal-input-pad"></div>
-      <div class="input-group" style="margin-bottom: 16px;"><input type="password" id="newPwdChange" placeholder="输入新密码 (12-128位)" data-i18n-placeholder="phNewPwd" autocomplete="new-password" class="modal-input-pad"></div>
+      <h2 class="modal-title" data-i18n="modalChangePwdTitle" id="modalChangePwdTitle">修改密码</h2>
+      <div class="input-group input-group-sm"><input type="password" id="oldPwd" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" autocomplete="current-password" class="modal-input-pad"></div>
+      <div class="input-group" class="input-group-gap"><input type="password" id="newPwdChange" placeholder="输入新密码 (12-128位)" data-i18n-placeholder="phNewPwd" autocomplete="new-password" class="modal-input-pad"></div>
       <div id="changePwdTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelChange" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>
@@ -189,8 +189,8 @@
         <h2 class="modal-title" data-i18n="modalSessionsTitle" id="modalSessionsTitle">登录设备管理</h2>
         <button type="button" id="btnCloseSessions" aria-label="关闭" class="modal-close-btn">×</button>
       </div>
-      <div id="sessionsList" style="overflow-y: auto; font-size: 13px; color: #666; flex: 1; margin-bottom: 16px;"></div>
-      <button type="button" id="btnRevokeOthers" style="width: 100%; height: 40px; background: #e53e3e; border: none; border-radius: 10px; font-weight: 600; color: #fff; cursor: pointer;" data-i18n="btnRevokeOthers">下线所有其他设备</button>
+      <div id="sessionsList" class="modal-list-flex"></div>
+      <button type="button" id="btnRevokeOthers" class="btn-danger" data-i18n="btnRevokeOthers">下线所有其他设备</button>
     </div>
   </div>
 
@@ -200,15 +200,15 @@
         <h2 class="modal-title" data-i18n="modalAuditTitle" id="modalAuditTitle">账号安全日志</h2>
         <button type="button" id="btnCloseAudit" aria-label="关闭" class="modal-close-btn">×</button>
       </div>
-      <div id="auditList" style="overflow-y: auto; font-size: 13px; color: #666; line-height: 1.6; padding-right: 8px;"></div>
+      <div id="auditList" class="modal-list"></div>
     </div>
   </div>
 
   <div id="sudoModal" role="dialog" aria-modal="true" aria-labelledby="modalSudoTitle" class="modal-backdrop modal-z-300">
     <div class="modal-card">
       <h2 class="modal-title-sm" data-i18n="modalSudoTitle" id="modalSudoTitle">安全验证</h2>
-      <p style="font-size: 12px; color: #888; margin-bottom: 16px;" data-i18n="modalSudoDesc">为了您的账号安全，请再次输入登录密码。</p>
-      <div class="input-group" style="margin-bottom: 16px;"><input type="password" id="sudoPassword" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" class="modal-input-pad"></div>
+      <p class="modal-desc" data-i18n="modalSudoDesc">为了您的账号安全，请再次输入登录密码。</p>
+      <div class="input-group" class="input-group-gap"><input type="password" id="sudoPassword" placeholder="输入当前密码" data-i18n-placeholder="phOldPwd" class="modal-input-pad"></div>
       <div id="sudoTip" class="modal-tip" hidden></div>
       <div class="modal-actions">
         <button type="button" id="btnCancelSudo" class="modal-btn-cancel" data-i18n="btnCancel">取消</button>
@@ -223,7 +223,7 @@
         <h2 id="modalTitle" class="modal-title">标题</h2>
         <button type="button" id="btnCloseModal" aria-label="关闭" class="modal-close-btn">×</button>
       </div>
-      <div id="modalContent" style="font-size: 13px; color: #666; line-height: 1.6; overflow-y: auto; padding-right: 8px;"></div>
+      <div id="modalContent" class="modal-content-text"></div>
     </div>
   </div>
 

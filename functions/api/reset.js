@@ -3,10 +3,9 @@ import { hashPassword } from "./_crypto.js";
 import { sendPasswordChangedNotice } from "./_notify.js";
 import { validatePassword } from "./_password.js";
 import { rateLimit } from "./_ratelimit.js";
+import { RESET_IP_LIMIT, RESET_IP_WINDOW_SEC } from "./_constants.js";
 import { writeAudit } from "./_audit.js";
 
-const RESET_IP_LIMIT = 5;
-const RESET_IP_WINDOW_SEC = 15 * 60;
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -73,6 +72,6 @@ export async function onRequestPost(context) {
     return Response.json({ success: true, message: "密码修改成功，请重新登录" });
   } catch (err) {
     console.error("Reset Error:", err);
-    return Response.json({ error: "服务开小差" }, { status: 500 });
+    return Response.json({ error: "服务器错误" }, { status: 500 });
   }
 }

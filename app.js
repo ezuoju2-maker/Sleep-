@@ -22,37 +22,9 @@ const ERROR_CLEAR_TIMEOUT = 3000;
 let shieldStartTime = Date.now();
 let shieldInteractions = 0;
 ['mousemove', 'touchmove', 'keydown', 'click'].forEach(evt => document.addEventListener(evt, () => shieldInteractions++, { passive: true }));
-function generateFingerprint() {
-  const parts = [];
-  try {
-    const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 50;
-    const ctx = canvas.getContext('2d');
-    ctx.textBaseline = 'top';
-    ctx.font = "14px 'Arial'";
-    ctx.fillStyle = '#f60';
-    ctx.fillRect(125, 1, 62, 20);
-    ctx.fillStyle = '#069';
-    ctx.fillText('fp', 2, 2);
-    ctx.strokeStyle = 'rgba(102,204,0,0.7)';
-    ctx.arc(50, 25, 20, 0, Math.PI * 2);
-    ctx.stroke();
-    parts.push(canvas.toDataURL());
-  } catch { }
-  parts.push(navigator.hardwareConcurrency ?? '?');
-  parts.push(navigator.platform ?? '?');
-  parts.push(`${screen.width}x${screen.height}x${screen.colorDepth}`);
-  parts.push(Intl.DateTimeFormat().resolvedOptions().timeZone ?? '?');
-  let hash = 0;
-  const raw = parts.join('|');
-  for (let i = 0; i < raw.length; i += 1) hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
-  return `fp_${(hash >>> 0).toString(36)}`;
-}
-const deviceFingerprint = generateFingerprint();
 function getShieldData(isReg) {
   const hp = document.getElementById(isReg ? 'shield_hp_reg' : 'shield_hp');
-  return { timeSpent: Math.floor((Date.now() - shieldStartTime) / 1000), interactions: shieldInteractions, isHoneypotFilled: hp ? hp.value !== "" : false, fingerprint: deviceFingerprint, isHeadless: navigator.webdriver || /HeadlessChrome|Puppeteer|Selenium/.test(navigator.userAgent) };
+  return { timeSpent: Math.floor((Date.now() - shieldStartTime) / 1000), interactions: shieldInteractions, isHoneypotFilled: hp ? hp.value !== "" : false };
 }
 const cardContainer = document.getElementById('cardContainer');
 function triggerShake() { cardContainer.classList.remove('shake'); void cardContainer.offsetWidth; cardContainer.classList.add('shake'); }
@@ -127,6 +99,10 @@ const i18nDict = {
     tipUser: "支持 4-20 位字母、数字或下划线",
     tipEmail: "用于登录、找回密码及接收重要通知",
     tipPwd: "长度 12-128 位，需包含大写字母、小写字母、数字、符号中的至少两种",
+    errNetwork: "网络错误，请稍后重试",
+    noLogs: "暂无日志",
+    devCurrent: "当前设备",
+    devOther: "其他设备",
     tipPwdConfirm: "请与上方设置的密码保持一致",
     phLoginUser: "请输入用户名或邮箱",
     phLoginPwd: "请输入密码",
@@ -181,6 +157,10 @@ const i18nDict = {
     tipUser: "4-20 letters, numbers or underscores",
     tipEmail: "Used for login, password recovery and notifications",
     tipPwd: "12-128 chars, at least two of: uppercase, lowercase, digits, symbols",
+    errNetwork: "Network error, please try again",
+    noLogs: "No logs",
+    devCurrent: "Current device",
+    devOther: "Other device",
     tipPwdConfirm: "Must match the password above",
     phLoginUser: "Username or email",
     phLoginPwd: "Password",
@@ -300,12 +280,12 @@ async function checkStatus() {
       document.getElementById('mainTabs').style.display = 'none';
       document.querySelectorAll('.form-content').forEach(el => el.classList.remove('active'));
       document.querySelector('.card-header').style.display = 'none';
-      document.getElementById('userPanel').style.display = 'block';
+      document.getElementById('userPanel').classList.add('active');
       document.getElementById('userUid').textContent = data.user.uid;
     } else {
       document.getElementById('mainTabs').style.display = 'flex';
       document.querySelector('.card-header').style.display = 'block';
-      document.getElementById('userPanel').style.display = 'none';
+      document.getElementById('userPanel').classList.remove('active');
       document.getElementById('loginForm').classList.add('active');
     }
   } catch {}
@@ -330,7 +310,7 @@ document.getElementById('btnSubmitForgot').onclick = async () => {
       document.getElementById('forgotModal').style.display = 'none';
     }
   } catch {
-    tip.textContent = '网络错误，请稍后重试'; tip.hidden = false;
+    tip.textContent = dict.errNetwork; tip.hidden = false;
   }
   btn.disabled = false;
 };
@@ -346,7 +326,7 @@ document.getElementById('btnAuditLog').onclick = async () => {
       const span = document.createElement('span'); span.textContent = ` - ${l.ip} (${l.country})`;
       div.appendChild(b); div.appendChild(span); list.appendChild(div);
     });
-  } else { list.textContent = '暂无日志'; }
+  } else { list.textContent = dict.noLogs; }
 };
 document.getElementById('btnCloseAudit').onclick = () => document.getElementById('auditModal').style.display = 'none';
 
@@ -357,7 +337,7 @@ document.getElementById('btnSessions').onclick = async () => {
   if (data.success) {
     data.sessions.forEach(s => {
       const div = document.createElement('div'); div.style.padding = '8px'; div.style.borderBottom = '1px solid #eee';
-      div.textContent = `${s.ip} - ${s.isCurrent ? '当前设备' : '其他设备'}`; list.appendChild(div);
+      div.textContent = `${s.ip} - ${s.isCurrent ? dict.devCurrent : dict.devOther}`; list.appendChild(div);
     });
   } else { list.textContent = '获取失败'; }
 };
@@ -380,7 +360,7 @@ document.getElementById('btnRevokeOthers').onclick = async () => {
       document.getElementById('sessionsModal').style.display = 'none';
     }
   } catch {
-    showToast('网络错误，请稍后重试');
+    showToast(dict.errNetwork);
   }
   btn.disabled = false;
 };
@@ -404,7 +384,7 @@ document.getElementById('btnSubmitSudo').onclick = async () => {
       tip.textContent = data.error || '验证失败'; tip.hidden = false;
     }
   } catch {
-    tip.textContent = '网络错误，请稍后重试'; tip.hidden = false;
+    tip.textContent = dict.errNetwork; tip.hidden = false;
   }
   btn.disabled = false;
 };
@@ -424,7 +404,7 @@ document.getElementById('btnSubmitChange').onclick = async () => {
       window.location.href = '/';
     }
   } catch {
-    tip.textContent = '网络错误，请稍后重试'; tip.hidden = false;
+    tip.textContent = dict.errNetwork; tip.hidden = false;
   }
   btn.disabled = false;
 };
@@ -454,7 +434,7 @@ document.getElementById('btnAddPasskey').onclick = async () => {
 };
 
 
-// ===== F-01 找回密码：消费邮件链接中的 reset_token =====
+// 找回密码：消费邮件链接中的 reset_token
 (function initResetFlow() {
   const token = new URLSearchParams(location.search).get('reset_token');
   if (!token) return;
@@ -489,7 +469,7 @@ document.getElementById('btnAddPasskey').onclick = async () => {
         tip.style.display = 'block';
       }
     } catch {
-      tip.textContent = '网络错误，请稍后重试';
+      tip.textContent = dict.errNetwork;
       tip.style.display = 'block';
     }
     btn.disabled = false;
@@ -497,7 +477,7 @@ document.getElementById('btnAddPasskey').onclick = async () => {
   };
 })();
 
-// ===== F-04 注册 Service Worker =====
+// 注册 Service Worker
 if ('serviceWorker' in navigator) {
   let hasController = Boolean(navigator.serviceWorker.controller);
   let refreshing = false;
@@ -529,7 +509,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ===== F-12 通用弹窗关闭（btnCloseModal + 遮罩 + Esc）=====
+// 通用弹窗关闭（btnCloseModal + 遮罩 + Esc）
 document.getElementById('btnCloseModal').onclick =
   () => { document.getElementById('textModal').style.display = 'none'; };
 
@@ -563,18 +543,7 @@ checkStatus();
   const modalIds = ['forgotModal','resetPwdModal','changePwdModal','sessionsModal','auditModal','sudoModal','textModal'];
   let lastFocused = null;
 
-  function openModal(modal) {
-    if (modal.style.display === 'flex') return;
-    lastFocused = document.activeElement;
-    modal.style.display = 'flex';
-    const first = modal.querySelector(FOCUSABLE);
-    if (first) setTimeout(() => first.focus(), 50);
-  }
 
-  function closeModal(modal) {
-    modal.style.display = 'none';
-    if (lastFocused) { lastFocused.focus(); lastFocused = null; }
-  }
 
   function trapFocus(e) {
     if (e.key !== 'Tab') return;

@@ -18,6 +18,8 @@ export const REGISTER_IP_DAY_LIMIT = 10;
 export const FORGOT_IP_DAY_LIMIT = 5;
 export const FORGOT_GLOBAL_DAY_LIMIT = 200;
 export const FORGOT_EMAIL_COOLDOWN_SEC = 24 * 60 * 60;
+export const RESET_IP_LIMIT = 5;
+export const RESET_IP_WINDOW_SEC = 15 * 60;
 
 export const SUDO_TOKEN_TTL_SEC = 300;
 export const MAX_SESSIONS_PER_USER = 10;

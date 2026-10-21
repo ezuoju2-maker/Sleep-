@@ -3,15 +3,13 @@
 export function evaluateShield(shieldData) {
   if (!shieldData) return { pass: false, reason: "missing_shield_data" };
 
-  const { timeSpent, interactions, isHoneypotFilled, fingerprint, isHeadless } = shieldData;
+  const { timeSpent, interactions, isHoneypotFilled } = shieldData;
 
   if (isHoneypotFilled) return { pass: false, reason: "honeypot_triggered" };
-  if (isHeadless) return { pass: false, reason: "headless_browser" };
 
   const signals = [];
   if (typeof timeSpent === "number" && timeSpent < 1) signals.push("fast_submit");
   if (typeof interactions === "number" && interactions < 3) signals.push("low_interaction");
-  if (!fingerprint) signals.push("missing_fingerprint");
 
-  return { pass: true, fingerprint: fingerprint || null, signals };
+  return { pass: true, signals };
 }
