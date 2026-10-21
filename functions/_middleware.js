@@ -4,7 +4,7 @@ const BLOCKED_EXACT = new Set([
   "/Sleep_final.md", "/logo.png.original", "/.assetsignore", "/.gitignore",
 ]);
 const BLOCKED_SUFFIXES = [".md", ".sql", ".toml", ".log", ".original", ".test.js", ".yml", ".yaml"];
-const ALLOWED_HTML = new Set(["/", "/index.html", "/help.html", "/privacy.html", "/terms.html"]);
+const ALLOWED_HTML = new Set(["/", "/index.html", "/help.html", "/privacy.html", "/terms.html", "/home", "/home/", "/home/index.html"]);
 
 function isBlocked(pathname) {
   if (BLOCKED_EXACT.has(pathname)) return true;

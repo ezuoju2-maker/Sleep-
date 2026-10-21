@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>控制台 - Sleep</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+  body { background: #f7f9fc !important; margin: 0; font-family: sans-serif; }
+  .header { background: #fff; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; padding: 16px 20px; align-items: center; }
+  .brand { font-size: 20px; font-weight: bold; }
+  .user-info { font-size: 14px; color: #555; }
+  .btn-logout { background: none; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+  .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .card h3 { margin-top: 0; font-size: 18px; }
+  .card p { color: #666; font-size: 14px; line-height: 1.5; }
+  .btn-action { width: 100%; padding: 10px; background: #111; color: #fff; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+  .btn-secondary { background: #f0f0f0; color: #333; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+  .modal-content { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
+  .modal-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">Sleep.</div>
+    <div class="user-info">
+      UID: <b id="userUid">...</b>
+      <button class="btn-logout" id="btnLogout">退出登录</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>控制台概览</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>🔐 安全日志</h3>
+        <p>查看最近的登录活动和安全事件。</p>
+        <button class="btn-action btn-secondary" id="btnAuditLog">查看日志</button>
+      </div>
+      <div class="card">
+        <h3>📱 登录设备</h3>
+        <p>管理所有活跃的设备会话，下线可疑设备。</p>
+        <button class="btn-action btn-secondary" id="btnSessions">管理设备</button>
+      </div>
+      <div class="card">
+        <h3>🔑 修改密码</h3>
+        <p>定期更换密码可以有效降低安全风险。</p>
+        <button class="btn-action btn-secondary" id="btnChangePwd">修改密码</button>
+      </div>
+      <div class="card">
+        <h3>👤 面容/指纹</h3>
+        <p>绑定 Passkey，享受免密码登录。</p>
+        <button class="btn-action" id="btnAddPasskey">立即开启</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="auditModal" class="modal"><div class="modal-content"><h3>安全日志</h3><div id="auditList"></div><button class="btn-action" onclick="document.getElementById('auditModal').style.display='none'">关闭</button></div></div>
+  <div id="sessionsModal" class="modal"><div class="modal-content"><h3>登录设备</h3><div id="sessionsList"></div><button class="btn-action btn-secondary" id="btnRevokeOthers" style="margin-bottom:10px;">下线其他设备</button><button class="btn-action" onclick="document.getElementById('sessionsModal').style.display='none'">关闭</button></div></div>
+  
+  <div id="sudoModal" class="modal"><div class="modal-content"><h3>安全验证</h3><p>请输入当前密码</p><input type="password" id="sudoPassword" class="modal-input"><button class="btn-action" id="btnSubmitSudo">验证</button></div></div>
+  <div id="changePwdModal" class="modal"><div class="modal-content"><h3>修改密码</h3><input type="password" id="oldPwd" class="modal-input" placeholder="当前密码"><input type="password" id="newPwdChange" class="modal-input" placeholder="新密码"><button class="btn-action" id="btnSubmitChange">确认修改</button></div></div>
+
+  <script src="/home.js"></script>
+</body>
+</html>

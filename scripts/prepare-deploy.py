@@ -7,11 +7,11 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "dist"
 
 FILES = [
-    "index.html", "app.js", "style.css", "sw.js", "passkey.js", "manifest.json",
+    "index.html", "app.js", "home.js", "style.css", "sw.js", "passkey.js", "manifest.json",
     "help.html", "privacy.html", "terms.html", "_headers",
     "logo.png", "icon-192.png", "icon-512.png", "icon-maskable.png", "apple-touch-icon.png",
 ]
-DIRS = ["functions", "static"]
+DIRS = ["functions", "static", "home"]
 
 if OUT.exists():
     shutil.rmtree(OUT)
