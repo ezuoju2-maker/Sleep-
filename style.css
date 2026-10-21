@@ -193,3 +193,9 @@ button:focus-visible, a:focus-visible {
 .modal-close-btn {
   background: none; border: none; font-size: 20px; cursor: pointer; color: #999;
 }
+
+/* 移动端输入框防缩放处理：iOS 要求 input 字号 >= 16px 才不会在聚焦时强制放大页面 */
+input, textarea, select {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
