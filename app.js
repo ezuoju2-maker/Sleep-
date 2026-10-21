@@ -110,3 +110,42 @@ document.getElementById('formRegister').onsubmit = async (e) => {
 
 // ========== 第三方登录 ==========
 document.getElementById('btnGithubLogin').onclick = () => { window.location.href = '/api/github-login'; };
+
+// ========== 面容 / 指纹登录 (Passkey) ==========
+const btnPasskeyLogin = document.getElementById('btnPasskeyLogin');
+if (btnPasskeyLogin) {
+  btnPasskeyLogin.onclick = async () => {
+    btnPasskeyLogin.disabled = true;
+    btnPasskeyLogin.textContent = '验证中...';
+    try {
+      // 1. 获取挑战
+      const resp = await api('/api/passkey/login-options', { method: 'POST' });
+      const { options, challengeId } = await resp.json();
+      if (!options) throw new Error('获取验证参数失败');
+
+      // 2. 唤起系统面容/指纹
+      const credential = await window.SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
+
+      // 3. 提交验证
+      const verifyRes = await api('/api/passkey/login-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ challengeId, credential })
+      });
+      const data = await verifyRes.json();
+      
+      if (data.success) {
+        window.location.href = '/home/';
+      } else {
+        showToast(data.error || '验证失败');
+      }
+    } catch (e) {
+      // 用户取消或设备不支持
+      if (e.name !== 'NotAllowedError') {
+        showToast('取消验证或设备不支持');
+      }
+    }
+    btnPasskeyLogin.disabled = false;
+    btnPasskeyLogin.textContent = 'Passkey';
+  };
+}
